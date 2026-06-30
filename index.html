@@ -710,8 +710,18 @@ const Q = {
 /* ─── API ─── */
 const API = {
   async fetch(method,params){
-    const url = CFG.appsScriptUrl + '?payload=' + encodeURIComponent(JSON.stringify(params));
-    const r = await fetch(url, { method:'GET', redirect:'follow' });
+    let r;
+    if(method === 'POST'){
+      r = await fetch(CFG.appsScriptUrl, {
+        method: 'POST',
+        redirect: 'follow',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(params)
+      });
+    } else {
+      const url = CFG.appsScriptUrl + '?payload=' + encodeURIComponent(JSON.stringify(params));
+      r = await fetch(url, { method:'GET', redirect:'follow' });
+    }
     const t = await r.text();
     try{return JSON.parse(t);}catch{throw new Error('رد غير متوقع');}
   },
